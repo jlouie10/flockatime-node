@@ -3,6 +3,7 @@
 const hashPass = require('hashpass');
 
 const User = require('./usersModel');
+const utils = require('../utils');
 
 /**
  * Create a user
@@ -39,7 +40,7 @@ function createUser(req, res) {
  * List all users sorted by id, with the most recent users appearing first
  */
 function listUsers(req, res) {
-  User.find(req.query, '-password -salt')
+  User.find(utils.formatQuery(req.query), '-password -salt')
     .lean()
     .sort({ _id: -1 })
     .then(function(users) {
