@@ -3,6 +3,7 @@
 const router = require('express').Router(); // Create a Router instance
 
 const role = require('./rolesController');
+const privileges = require('../privileges/privilegesRoutes');
 
 // Routes
 router
@@ -15,5 +16,8 @@ router
   .get(role.retrieve)
   .patch(role.update)
   .delete(role.del);
+
+// Forward to child routes
+router.use('/:id/privileges', role.retrieve, privileges);
 
 module.exports = router;

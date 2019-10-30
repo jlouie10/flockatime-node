@@ -48,7 +48,7 @@ function listRoles(req, res) {
 /**
  * Retrieve a role by id
  */
-function retrieveRole(req, res) {
+function retrieveRole(req, res, next) {
   Role.findOne({ _id: req.params.id })
     .lean()
     .then(function(role) {
@@ -60,7 +60,14 @@ function retrieveRole(req, res) {
           }
         });
       } else {
-        res.status(200).json(utils.formatRoleResponse(role));
+        // Set role id and pass control to the next middleware function when
+        // forwarding to a child route
+        if (req.baseUrl.includes('privileges')) {
+          res.locals.role = role._id;
+          next();
+        } else {
+          res.status(200).json(utils.formatRoleResponse(role));
+        }
       }
     })
     .catch(function(err) {
