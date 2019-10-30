@@ -48,7 +48,7 @@ function listRoles(req, res) {
 /**
  * Retrieve a role by id
  */
-function retrieveRole(req, res) {
+function retrieveRole(req, res, next) {
   Role.findOne({ _id: req.params.id })
     .lean()
     .then(function(role) {
@@ -60,7 +60,14 @@ function retrieveRole(req, res) {
           }
         });
       } else {
-        res.status(200).json(utils.formatRoleResponse(role));
+        // Set role id and pass control to the next middleware function when
+        // forwarding to a child route
+        if (req.baseUrl.includes('privileges')) {
+          res.locals.role = role._id;
+          next();
+        } else {
+          res.status(200).json(utils.formatRoleResponse(role));
+        }
       }
     })
     .catch(function(err) {
@@ -136,10 +143,22 @@ function deleteRole(req, res) {
     });
 }
 
+/**
+ * Attach a privilege to a role
+ */
+function attachToRole(req, res) {
+  Role.findByIdAndUpdate(req.params.id, res.locals.attachment).catch(function(
+    err
+  ) {
+    console.log(err);
+  });
+}
+
 module.exports = {
   create: createRole,
   list: listRoles,
   retrieve: retrieveRole,
   update: updateRole,
-  del: deleteRole // Avoid 'delete' keyword in JS
+  del: deleteRole, // Avoid 'delete' keyword in JS
+  attach: attachToRole
 };
