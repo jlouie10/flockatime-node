@@ -21,7 +21,7 @@ function createPrivilege(req, res, next) {
         }
       };
 
-      res.status(200).json(privilege);
+      res.status(200).json(utils.formatPrivilegeResponse(privilege));
       next();
     })
     .catch(function(err) {
@@ -51,7 +51,11 @@ function listPrivileges(req, res) {
     .lean()
     .sort({ _id: -1 })
     .then(function(privileges) {
-      res.status(200).json(privileges);
+      res
+        .status(200)
+        .json(
+          privileges.map(privilege => utils.formatPrivilegeResponse(privilege))
+        );
     })
     .catch(function(err) {
       console.log(err);
@@ -83,7 +87,7 @@ function retrievePrivilege(req, res) {
           }
         });
       } else {
-        res.status(200).json(privilege);
+        res.status(200).json(utils.formatPrivilegeResponse(privilege));
       }
     })
     .catch(function(err) {
@@ -125,7 +129,7 @@ function updatePrivilege(req, res, next) {
           }
         };
 
-        res.status(200).json(privilege);
+        res.status(200).json(utils.formatPrivilegeResponse(privilege));
         next();
       }
     })

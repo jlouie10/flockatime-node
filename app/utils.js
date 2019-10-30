@@ -35,6 +35,22 @@ function formatQuery(query) {
 }
 
 /**
+ * Format the privilege response
+ */
+function formatPrivilegeResponse(privilege) {
+  return {
+    id: privilege._id,
+    actions: privilege.actions,
+    created: privilege.created.getTime(),
+    name: privilege.name,
+    resource: privilege.resource,
+    role: privilege.role,
+    scope: privilege.scope,
+    updated: privilege.updated.getTime()
+  };
+}
+
+/**
  * Format the role response
  */
 function formatRoleResponse(role) {
@@ -42,7 +58,9 @@ function formatRoleResponse(role) {
     id: role._id,
     created: role.created.getTime(),
     name: role.name,
-    privileges: role.privileges,
+    privileges: role.privileges.map(privilege =>
+      formatPrivilegeResponse(privilege)
+    ),
     updated: role.updated.getTime()
   };
 }
@@ -69,6 +87,7 @@ function formatUserResponse(user) {
 
 module.exports = {
   formatQuery,
+  formatPrivilegeResponse,
   formatRoleResponse,
   formatUserResponse
 };
