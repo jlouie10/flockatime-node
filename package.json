@@ -1,0 +1,33 @@
+{
+  "name": "flockatime-node",
+  "version": "1.0.0",
+  "description": "A productivity app for developers to track time spent coding.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "devserver": "./node_modules/nodemon/bin/nodemon.js server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jlouie10/flockatime-node.git"
+  },
+  "keywords": [
+    "flockatime",
+    "productivity",
+    "time tracker"
+  ],
+  "author": "FlockaTime",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jlouie10/flockatime-node/issues"
+  },
+  "homepage": "https://github.com/jlouie10/flockatime-node#readme",
+  "devDependencies": {
+    "nodemon": "^1.19.4"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.7.7"
+  }
+}
