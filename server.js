@@ -6,6 +6,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 const config = require('./config');
+const routes = require('./app/routes');
 
 const app = express();
 const PORT = process.env.PORT || 9000;
@@ -21,6 +22,9 @@ mongoose.connect(config.mongodb.uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
+
+// Routes
+app.use(routes);
 
 // Start server
 app.listen(PORT);
