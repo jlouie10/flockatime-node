@@ -8,7 +8,9 @@ const config = {
     apiKeys: {}
   },
   prod: {
-    mongodb: {},
+    mongodb: {
+      uri: process.env.MONGODB_URI
+    },
     apiKeys: {}
   }
 };
