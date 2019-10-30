@@ -9,7 +9,7 @@ const utils = require('../utils');
 function createRole(req, res) {
   Role.create(req.body)
     .then(function(role) {
-      res.status(200).json(role);
+      res.status(200).json(utils.formatRoleResponse(role));
     })
     .catch(function(err) {
       console.log(err);
@@ -31,7 +31,7 @@ function listRoles(req, res) {
     .lean()
     .sort({ _id: -1 })
     .then(function(roles) {
-      res.status(200).json(roles);
+      res.status(200).json(roles.map(role => utils.formatRoleResponse(role)));
     })
     .catch(function(err) {
       console.log(err);
@@ -60,7 +60,7 @@ function retrieveRole(req, res) {
           }
         });
       } else {
-        res.status(200).json(role);
+        res.status(200).json(utils.formatRoleResponse(role));
       }
     })
     .catch(function(err) {
@@ -89,7 +89,7 @@ function updateRole(req, res) {
           }
         });
       } else {
-        res.status(200).json(role);
+        res.status(200).json(utils.formatRoleResponse(role));
       }
     })
     .catch(function(err) {
