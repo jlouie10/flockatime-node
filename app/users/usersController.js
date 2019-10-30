@@ -22,7 +22,7 @@ function createUser(req, res) {
     status: req.body.status
   })
     .then(function(user) {
-      res.status(200).json(user);
+      res.status(200).json(utils.formatUserResponse(user));
     })
     .catch(function(err) {
       console.log(err);
@@ -44,7 +44,7 @@ function listUsers(req, res) {
     .lean()
     .sort({ _id: -1 })
     .then(function(users) {
-      res.status(200).json(users);
+      res.status(200).json(users.map(user => utils.formatUserResponse(user)));
     })
     .catch(function(err) {
       console.log(err);
@@ -65,7 +65,16 @@ function retrieveUser(req, res) {
   User.findOne({ _id: req.params.id }, '-password -salt')
     .lean()
     .then(function(user) {
-      res.status(200).json(user);
+      if (user === null) {
+        res.status(404).json({
+          error: {
+            code: 404,
+            message: `No such user: ${req.params.id}`
+          }
+        });
+      } else {
+        res.status(200).json(utils.formatUserResponse(user));
+      }
     })
     .catch(function(err) {
       console.log(err);
@@ -103,7 +112,16 @@ function updateUser(req, res) {
 
   User.findOneAndUpdate({ _id: req.params.id }, reqBody, { new: true })
     .then(function(user) {
-      res.status(200).json(user);
+      if (user === null) {
+        res.status(404).json({
+          error: {
+            code: 404,
+            message: `No such user: ${req.params.id}`
+          }
+        });
+      } else {
+        res.status(200).json(utils.formatUserResponse(user));
+      }
     })
     .catch(function(err) {
       console.log(err);
@@ -123,7 +141,19 @@ function updateUser(req, res) {
 function deleteUser(req, res) {
   User.deleteOne({ _id: req.params.id })
     .then(function(user) {
-      res.status(200).json(user);
+      if (user.deletedCount === 0) {
+        res.status(404).json({
+          error: {
+            code: 404,
+            message: `No such user: ${req.params.id}`
+          }
+        });
+      } else {
+        res.status(200).json({
+          id: req.params.id,
+          deleted: true
+        });
+      }
     })
     .catch(function(err) {
       console.log(err);

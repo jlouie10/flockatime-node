@@ -34,4 +34,27 @@ function formatQuery(query) {
   return newQuery;
 }
 
-module.exports = { formatQuery };
+/**
+ * Format the user response - remove password and salt
+ */
+function formatUserResponse(user) {
+  return {
+    id: user._id,
+    created: user.created.getTime(),
+    description: user.description,
+    email: user.email,
+    extensions: user.extensions,
+    flockalogs: user.flockalogs,
+    name: user.name,
+    role: user.role,
+    sessions: user.sessions,
+    status: user.status,
+    tokens: user.tokens,
+    updated: user.updated.getTime()
+  };
+}
+
+module.exports = {
+  formatQuery,
+  formatUserResponse
+};
