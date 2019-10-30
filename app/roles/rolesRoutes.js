@@ -18,6 +18,6 @@ router
   .delete(role.del);
 
 // Forward to child routes
-router.use('/:id/privileges', role.retrieve, privileges);
+router.use('/:id/privileges', role.retrieve, privileges, role.attach);
 
 module.exports = router;

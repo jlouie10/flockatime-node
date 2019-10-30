@@ -28,6 +28,22 @@ const roleSchema = new Schema(
   { timestamps: { createdAt: 'created', updatedAt: 'updated' } }
 );
 
+// Always attach `populate()` to `find()`, `findOne()` and `findOneAndUpdate()` calls
+roleSchema
+  .pre('find', autoPopulate)
+  .pre('findOne', autoPopulate)
+  .pre('findOneAndUpdate', autoPopulate);
+
+/**
+ * Attach populate method
+ */
+function autoPopulate() {
+  this.populate({
+    options: { sort: { _id: -1 } },
+    path: 'privileges'
+  });
+}
+
 // Create role model
 const Role = mongoose.model('Role', roleSchema);
 

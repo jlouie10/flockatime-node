@@ -6,7 +6,7 @@ const utils = require('../utils');
 /**
  * Create a privilege
  */
-function createPrivilege(req, res) {
+function createPrivilege(req, res, next) {
   Privilege.create({
     actions: req.body.actions,
     name: req.body.name,
@@ -15,7 +15,14 @@ function createPrivilege(req, res) {
     scope: req.body.scope
   })
     .then(function(privilege) {
+      res.locals.attachment = {
+        $addToSet: {
+          privileges: privilege._id
+        }
+      };
+
       res.status(200).json(privilege);
+      next();
     })
     .catch(function(err) {
       console.log(err);
@@ -94,7 +101,7 @@ function retrievePrivilege(req, res) {
 /**
  * Update a privilege by id
  */
-function updatePrivilege(req, res) {
+function updatePrivilege(req, res, next) {
   Privilege.findOneAndUpdate(
     {
       _id: req.params.id,
@@ -112,7 +119,14 @@ function updatePrivilege(req, res) {
           }
         });
       } else {
+        res.locals.attachment = {
+          $addToSet: {
+            privileges: privilege._id
+          }
+        };
+
         res.status(200).json(privilege);
+        next();
       }
     })
     .catch(function(err) {
@@ -130,7 +144,7 @@ function updatePrivilege(req, res) {
 /**
  * Delete a privilege by id
  */
-function deletePrivilege(req, res) {
+function deletePrivilege(req, res, next) {
   Privilege.deleteOne({
     _id: req.params.id,
     role: res.locals.role
@@ -144,10 +158,18 @@ function deletePrivilege(req, res) {
           }
         });
       } else {
+        res.locals.attachment = {
+          $pull: {
+            privileges: req.params.id
+          }
+        };
+
         res.status(200).json({
           id: req.params.id,
           deleted: true
         });
+
+        next();
       }
     })
     .catch(function(err) {

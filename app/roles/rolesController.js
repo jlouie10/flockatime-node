@@ -143,10 +143,22 @@ function deleteRole(req, res) {
     });
 }
 
+/**
+ * Attach a privilege to a role
+ */
+function attachToRole(req, res) {
+  Role.findByIdAndUpdate(req.params.id, res.locals.attachment).catch(function(
+    err
+  ) {
+    console.log(err);
+  });
+}
+
 module.exports = {
   create: createRole,
   list: listRoles,
   retrieve: retrieveRole,
   update: updateRole,
-  del: deleteRole // Avoid 'delete' keyword in JS
+  del: deleteRole, // Avoid 'delete' keyword in JS
+  attach: attachToRole
 };
