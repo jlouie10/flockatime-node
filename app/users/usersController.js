@@ -1,19 +1,23 @@
 'use strict';
 
+const hashPass = require('hashpass');
+
 const User = require('./usersModel');
 
 /**
  * Create a user
  */
 function createUser(req, res) {
+  const password = hashPass(req.body.password);
+
   User.create({
     description: req.body.description,
     email: req.body.email,
     extensions: req.body.extensions,
     name: req.body.name,
-    password: req.body.password,
+    password: password.hash,
     role: req.body.role,
-    salt: 'salt',
+    salt: password.salt,
     status: req.body.status
   })
     .then(function(user) {
@@ -78,7 +82,25 @@ function retrieveUser(req, res) {
  * Update a user by id
  */
 function updateUser(req, res) {
-  User.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true })
+  let reqBody = {};
+
+  // Add password hash and salt to a request body that contains a password
+  if (req.body.password) {
+    Object.keys(req.body).forEach(key => {
+      if (key === 'password') {
+        const password = hashPass(req.body[key]);
+
+        reqBody[key] = password.hash;
+        reqBody.salt = password.salt;
+      } else {
+        reqBody[key] = req.body[key];
+      }
+    });
+  } else {
+    reqBody = req.body;
+  }
+
+  User.findOneAndUpdate({ _id: req.params.id }, reqBody, { new: true })
     .then(function(user) {
       res.status(200).json(user);
     })
