@@ -35,6 +35,19 @@ function formatQuery(query) {
 }
 
 /**
+ * Format the role response
+ */
+function formatRoleResponse(role) {
+  return {
+    id: role._id,
+    created: role.created.getTime(),
+    name: role.name,
+    privileges: role.privileges,
+    updated: role.updated.getTime()
+  };
+}
+
+/**
  * Format the user response - remove password and salt
  */
 function formatUserResponse(user) {
@@ -56,5 +69,6 @@ function formatUserResponse(user) {
 
 module.exports = {
   formatQuery,
+  formatRoleResponse,
   formatUserResponse
 };
