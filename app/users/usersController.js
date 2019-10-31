@@ -61,7 +61,7 @@ function listUsers(req, res) {
 /**
  * Retrieve a user by id
  */
-function retrieveUser(req, res) {
+function retrieveUser(req, res, next) {
   User.findOne({ _id: req.params.id }, '-password -salt')
     .lean()
     .then(function(user) {
@@ -73,7 +73,14 @@ function retrieveUser(req, res) {
           }
         });
       } else {
-        res.status(200).json(utils.formatUserResponse(user));
+        // Set user id and pass control to the next middleware function when
+        // forwarding to a child route
+        if (req.baseUrl.includes('sessions')) {
+          res.locals.user = user._id;
+          next();
+        } else {
+          res.status(200).json(utils.formatUserResponse(user));
+        }
       }
     })
     .catch(function(err) {
