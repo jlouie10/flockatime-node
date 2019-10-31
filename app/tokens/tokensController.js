@@ -20,20 +20,18 @@ function createToken(req, res, next) {
     value: tokenValue.hash
   })
     .then(function(token) {
+      const resBody = utils.formatTokenResponse(token);
+
+      // Expose the token once in the response, after creation
+      resBody.value = uuid;
+
       res.locals.attachment = {
         $addToSet: {
-          tokens: token._id
+          tokens: resBody.id
         }
       };
 
-      // Expose the token once in the response, after creation
-      res.status(200).json({
-        _id: token._id,
-        description: token.description,
-        user: token.user,
-        value: uuid
-      });
-
+      res.status(200).json(resBody);
       next();
     })
     .catch(function(err) {
@@ -66,7 +64,9 @@ function listTokens(req, res) {
     .lean()
     .sort({ _id: -1 })
     .then(function(tokens) {
-      res.status(200).json(tokens);
+      res
+        .status(200)
+        .json(tokens.map(token => utils.formatTokenResponse(token)));
     })
     .catch(function(err) {
       console.log(err);
@@ -101,7 +101,7 @@ function retrieveToken(req, res) {
           }
         });
       } else {
-        res.status(200).json(token);
+        res.status(200).json(utils.formatTokenResponse(token));
       }
     })
     .catch(function(err) {
@@ -143,7 +143,7 @@ function updateToken(req, res, next) {
           }
         };
 
-        res.status(200).json(token);
+        res.status(200).json(utils.formatTokenResponse(token));
         next();
       }
     })
