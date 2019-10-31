@@ -75,7 +75,10 @@ function retrieveUser(req, res, next) {
       } else {
         // Set user id and pass control to the next middleware function when
         // forwarding to a child route
-        if (req.baseUrl.includes('sessions')) {
+        if (
+          req.baseUrl.includes('sessions') ||
+          req.baseUrl.includes('tokens')
+        ) {
           res.locals.user = user._id;
           next();
         } else {

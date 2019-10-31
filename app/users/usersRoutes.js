@@ -4,6 +4,7 @@ const router = require('express').Router(); // Create a Router instance
 
 const user = require('./usersController');
 const sessions = require('../sessions/sessionsRoutes');
+const tokens = require('../tokens/tokensRoutes');
 
 // Routes
 router
@@ -19,5 +20,6 @@ router
 
 // Forward to child routes
 router.use('/:id/sessions', user.retrieve, sessions, user.attach);
+router.use('/:id/tokens', user.retrieve, tokens, user.attach);
 
 module.exports = router;
