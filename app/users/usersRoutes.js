@@ -3,6 +3,7 @@
 const router = require('express').Router(); // Create a Router instance
 
 const user = require('./usersController');
+const flockalogs = require('../flockalogs/flockalogsRoutes');
 const sessions = require('../sessions/sessionsRoutes');
 const tokens = require('../tokens/tokensRoutes');
 
@@ -19,6 +20,7 @@ router
   .delete(user.del);
 
 // Forward to child routes
+router.use('/:id/flockalogs', user.retrieve, flockalogs, user.attach);
 router.use('/:id/sessions', user.retrieve, sessions, user.attach);
 router.use('/:id/tokens', user.retrieve, tokens, user.attach);
 

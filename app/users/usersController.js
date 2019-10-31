@@ -76,6 +76,7 @@ function retrieveUser(req, res, next) {
         // Set user id and pass control to the next middleware function when
         // forwarding to a child route
         if (
+          req.baseUrl.includes('flockalogs') ||
           req.baseUrl.includes('sessions') ||
           req.baseUrl.includes('tokens')
         ) {

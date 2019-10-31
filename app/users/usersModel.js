@@ -89,13 +89,18 @@ userSchema
 function autoPopulate() {
   this.populate({
     options: { sort: { _id: -1 } },
-    path: 'sessions',
-    select: '-salt -sessionToken'
-  }).populate({
-    options: { sort: { _id: -1 } },
-    path: 'tokens',
-    select: '-salt -value'
-  });
+    path: 'flockalogs'
+  })
+    .populate({
+      options: { sort: { _id: -1 } },
+      path: 'sessions',
+      select: '-salt -sessionToken'
+    })
+    .populate({
+      options: { sort: { _id: -1 } },
+      path: 'tokens',
+      select: '-salt -value'
+    });
 }
 
 // Create user model
