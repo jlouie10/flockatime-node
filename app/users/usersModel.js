@@ -77,6 +77,23 @@ const userSchema = new Schema(
   { timestamps: { createdAt: 'created', updatedAt: 'updated' } }
 );
 
+// Always attach `populate()` to `find()`, `findOne()` and `findOneAndUpdate()` calls
+userSchema
+  .pre('find', autoPopulate)
+  .pre('findOne', autoPopulate)
+  .pre('findOneAndUpdate', autoPopulate);
+
+/**
+ * Attach populate method
+ */
+function autoPopulate() {
+  this.populate({
+    options: { sort: { _id: -1 } },
+    path: 'sessions',
+    select: '-salt -sessionToken'
+  });
+}
+
 // Create user model
 const User = mongoose.model('User', userSchema);
 

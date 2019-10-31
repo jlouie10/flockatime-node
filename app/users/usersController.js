@@ -174,10 +174,22 @@ function deleteUser(req, res) {
     });
 }
 
+/**
+ * Attach an object to a user
+ */
+function attachToUser(req, res) {
+  User.findByIdAndUpdate(req.params.id, res.locals.attachment).catch(function(
+    err
+  ) {
+    console.log(err);
+  });
+}
+
 module.exports = {
   create: createUser,
   list: listUsers,
   retrieve: retrieveUser,
   update: updateUser,
-  del: deleteUser // Avoid 'delete' keyword in JS
+  del: deleteUser, // Avoid 'delete' keyword in JS
+  attach: attachToUser
 };

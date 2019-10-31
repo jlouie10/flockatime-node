@@ -18,6 +18,6 @@ router
   .delete(user.del);
 
 // Forward to child routes
-router.use('/:id/sessions', user.retrieve, sessions);
+router.use('/:id/sessions', user.retrieve, sessions, user.attach);
 
 module.exports = router;

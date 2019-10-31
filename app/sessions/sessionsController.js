@@ -9,7 +9,7 @@ const utils = require('../utils');
 /**
  * Create a session
  */
-function createSession(req, res) {
+function createSession(req, res, next) {
   const uuid = uuidv1();
   const sessionToken = hashPass(uuid);
 
@@ -20,11 +20,19 @@ function createSession(req, res) {
     user: res.locals.user
   })
     .then(function(session) {
+      res.locals.attachment = {
+        $addToSet: {
+          sessions: session._id
+        }
+      };
+
       // Expose the session token once in a response header, after creation
       res
         .status(200)
         .header('x-session-token', uuid)
         .json(session);
+
+      next();
     })
     .catch(function(err) {
       console.log(err);
@@ -109,7 +117,7 @@ function retrieveSession(req, res) {
 /**
  * Update a session by id
  */
-function updateSession(req, res) {
+function updateSession(req, res, next) {
   Session.findOneAndUpdate(
     {
       _id: req.params.id,
@@ -127,7 +135,14 @@ function updateSession(req, res) {
           }
         });
       } else {
+        res.locals.attachment = {
+          $addToSet: {
+            sessions: session._id
+          }
+        };
+
         res.status(200).json(session);
+        next();
       }
     })
     .catch(function(err) {
@@ -145,7 +160,7 @@ function updateSession(req, res) {
 /**
  * Delete a session by id
  */
-function deleteSession(req, res) {
+function deleteSession(req, res, next) {
   Session.deleteOne({
     _id: req.params.id,
     user: res.locals.user
@@ -159,10 +174,18 @@ function deleteSession(req, res) {
           }
         });
       } else {
+        res.locals.attachment = {
+          $pull: {
+            sessions: req.params.id
+          }
+        };
+
         res.status(200).json({
           id: req.params.id,
           deleted: true
         });
+
+        next();
       }
     })
     .catch(function(err) {
