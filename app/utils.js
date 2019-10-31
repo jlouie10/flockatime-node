@@ -79,6 +79,19 @@ function formatSessionResponse(session) {
 }
 
 /**
+ * Format the token response - remove token value and salt
+ */
+function formatTokenResponse(token) {
+  return {
+    id: token._id,
+    created: token.created.getTime(),
+    description: token.description,
+    updated: token.updated.getTime(),
+    user: token.user
+  };
+}
+
+/**
  * Format the user response - remove password and salt
  */
 function formatUserResponse(user) {
@@ -93,7 +106,7 @@ function formatUserResponse(user) {
     role: user.role,
     sessions: user.sessions.map(session => formatSessionResponse(session)),
     status: user.status,
-    tokens: user.tokens,
+    tokens: user.tokens.map(token => formatTokenResponse(token)),
     updated: user.updated.getTime()
   };
 }
@@ -103,5 +116,6 @@ module.exports = {
   formatPrivilegeResponse,
   formatRoleResponse,
   formatSessionResponse,
+  formatTokenResponse,
   formatUserResponse
 };
