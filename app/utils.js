@@ -35,6 +35,19 @@ function formatQuery(query) {
 }
 
 /**
+ * Format the FlockaLog response
+ */
+function formatFlockalogResponse(flockalog) {
+  return {
+    id: flockalog._id,
+    created: flockalog.created.getTime(),
+    timestamps: flockalog.timestamps,
+    updated: flockalog.updated.getTime(),
+    user: flockalog.user
+  };
+}
+
+/**
  * Format the privilege response
  */
 function formatPrivilegeResponse(privilege) {
@@ -101,7 +114,9 @@ function formatUserResponse(user) {
     description: user.description,
     email: user.email,
     extensions: user.extensions,
-    flockalogs: user.flockalogs,
+    flockalogs: user.flockalogs.map(flockalog =>
+      formatFlockalogResponse(flockalog)
+    ),
     name: user.name,
     role: user.role,
     sessions: user.sessions.map(session => formatSessionResponse(session)),
@@ -113,6 +128,7 @@ function formatUserResponse(user) {
 
 module.exports = {
   formatQuery,
+  formatFlockalogResponse,
   formatPrivilegeResponse,
   formatRoleResponse,
   formatSessionResponse,

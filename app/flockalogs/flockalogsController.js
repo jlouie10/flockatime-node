@@ -18,7 +18,7 @@ function createFlockalog(req, res, next) {
         }
       };
 
-      res.status(200).json(flockalog);
+      res.status(200).json(utils.formatFlockalogResponse(flockalog));
       next();
     })
     .catch(function(err) {
@@ -48,7 +48,11 @@ function listFlockalogs(req, res) {
     .lean()
     .sort({ _id: -1 })
     .then(function(flockalogs) {
-      res.status(200).json(flockalogs);
+      res
+        .status(200)
+        .json(
+          flockalogs.map(flockalog => utils.formatFlockalogResponse(flockalog))
+        );
     })
     .catch(function(err) {
       console.log(err);
@@ -80,7 +84,7 @@ function retrieveFlockalog(req, res) {
           }
         });
       } else {
-        res.status(200).json(flockalog);
+        res.status(200).json(utils.formatFlockalogResponse(flockalog));
       }
     })
     .catch(function(err) {
@@ -122,7 +126,7 @@ function updateFlockalog(req, res, next) {
           }
         };
 
-        res.status(200).json(flockalog);
+        res.status(200).json(utils.formatFlockalogResponse(flockalog));
         next();
       }
     })
