@@ -66,6 +66,19 @@ function formatRoleResponse(role) {
 }
 
 /**
+ * Format the session response - remove session token and salt
+ */
+function formatSessionResponse(session) {
+  return {
+    id: session._id,
+    created: session.created.getTime(),
+    description: session.description,
+    updated: session.updated.getTime(),
+    user: session.user
+  };
+}
+
+/**
  * Format the user response - remove password and salt
  */
 function formatUserResponse(user) {
@@ -78,7 +91,7 @@ function formatUserResponse(user) {
     flockalogs: user.flockalogs,
     name: user.name,
     role: user.role,
-    sessions: user.sessions,
+    sessions: user.sessions.map(session => formatSessionResponse(session)),
     status: user.status,
     tokens: user.tokens,
     updated: user.updated.getTime()
@@ -89,5 +102,6 @@ module.exports = {
   formatQuery,
   formatPrivilegeResponse,
   formatRoleResponse,
+  formatSessionResponse,
   formatUserResponse
 };

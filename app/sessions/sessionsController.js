@@ -30,7 +30,7 @@ function createSession(req, res, next) {
       res
         .status(200)
         .header('x-session-token', uuid)
-        .json(session);
+        .json(utils.formatSessionResponse(session));
 
       next();
     })
@@ -64,7 +64,9 @@ function listSessions(req, res) {
     .lean()
     .sort({ _id: -1 })
     .then(function(sessions) {
-      res.status(200).json(sessions);
+      res
+        .status(200)
+        .json(sessions.map(session => utils.formatSessionResponse(session)));
     })
     .catch(function(err) {
       console.log(err);
@@ -99,7 +101,7 @@ function retrieveSession(req, res) {
           }
         });
       } else {
-        res.status(200).json(session);
+        res.status(200).json(utils.formatSessionResponse(session));
       }
     })
     .catch(function(err) {
@@ -141,7 +143,7 @@ function updateSession(req, res, next) {
           }
         };
 
-        res.status(200).json(session);
+        res.status(200).json(utils.formatSessionResponse(session));
         next();
       }
     })
