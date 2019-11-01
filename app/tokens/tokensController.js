@@ -202,10 +202,37 @@ function deleteToken(req, res, next) {
     });
 }
 
+/**
+ * Return a promise that lists all tokens and uses the token salt to check for
+ * the hashed value
+ */
+function verifyToken(token) {
+  return new Promise(function(resolve, reject) {
+    Token.find({})
+      .lean()
+      .sort({ _id: -1 })
+      .then(function(results) {
+        if (
+          results.some(
+            result => hashPass(token, result.salt).hash === result.value
+          )
+        ) {
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      })
+      .catch(function(err) {
+        reject(err);
+      });
+  });
+}
+
 module.exports = {
   create: createToken,
   list: listTokens,
   retrieve: retrieveToken,
   update: updateToken,
-  del: deleteToken // Avoid 'delete' keyword in JS
+  del: deleteToken, // Avoid 'delete' keyword in JS
+  verify: verifyToken
 };
