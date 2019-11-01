@@ -202,10 +202,43 @@ function deleteSession(req, res, next) {
     });
 }
 
+/**
+ * Return a promise that lists all sessions and uses the session token salt to
+ * check for the hashed value
+ */
+function verifySession(sessionToken) {
+  return new Promise(function(resolve, reject) {
+    Session.find({})
+      .lean()
+      .sort({ _id: -1 })
+      .then(function(results) {
+        let verifiedSession;
+
+        results.some(result => {
+          if (
+            hashPass(sessionToken, result.salt).hash === result.sessionToken
+          ) {
+            verifiedSession = result;
+
+            return true;
+          } else {
+            return false;
+          }
+        });
+
+        resolve(verifiedSession);
+      })
+      .catch(function(err) {
+        reject(err);
+      });
+  });
+}
+
 module.exports = {
   create: createSession,
   list: listSessions,
   retrieve: retrieveSession,
   update: updateSession,
-  del: deleteSession // Avoid 'delete' keyword in JS
+  del: deleteSession, // Avoid 'delete' keyword in JS
+  verify: verifySession
 };

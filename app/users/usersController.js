@@ -189,11 +189,28 @@ function attachToUser(req, res) {
   });
 }
 
+/**
+ * Return a promise that retrieves a user by id
+ */
+function retrieveUserById(id) {
+  return new Promise(function(resolve, reject) {
+    User.findById(id)
+      .lean()
+      .then(function(user) {
+        resolve(user);
+      })
+      .catch(function(err) {
+        reject(err);
+      });
+  });
+}
+
 module.exports = {
   create: createUser,
   list: listUsers,
   retrieve: retrieveUser,
   update: updateUser,
   del: deleteUser, // Avoid 'delete' keyword in JS
-  attach: attachToUser
+  attach: attachToUser,
+  retrieveById: retrieveUserById
 };
