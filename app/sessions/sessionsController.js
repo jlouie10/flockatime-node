@@ -212,16 +212,21 @@ function verifySession(sessionToken) {
       .lean()
       .sort({ _id: -1 })
       .then(function(results) {
-        if (
-          results.some(
-            result =>
-              hashPass(sessionToken, result.salt).hash === result.sessionToken
-          )
-        ) {
-          resolve(true);
-        } else {
-          resolve(false);
-        }
+        let verifiedSession;
+
+        results.some(result => {
+          if (
+            hashPass(sessionToken, result.salt).hash === result.sessionToken
+          ) {
+            verifiedSession = result;
+
+            return true;
+          } else {
+            return false;
+          }
+        });
+
+        resolve(verifiedSession);
       })
       .catch(function(err) {
         reject(err);

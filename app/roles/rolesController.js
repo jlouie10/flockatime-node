@@ -154,11 +154,28 @@ function attachToRole(req, res) {
   });
 }
 
+/**
+ * Return a promise that retrieves a role by name
+ */
+function retrieveRoleByName(name) {
+  return new Promise(function(resolve, reject) {
+    Role.findOne({ name })
+      .lean()
+      .then(function(role) {
+        resolve(role);
+      })
+      .catch(function(err) {
+        reject(err);
+      });
+  });
+}
+
 module.exports = {
   create: createRole,
   list: listRoles,
   retrieve: retrieveRole,
   update: updateRole,
   del: deleteRole, // Avoid 'delete' keyword in JS
-  attach: attachToRole
+  attach: attachToRole,
+  retrieveByName: retrieveRoleByName
 };

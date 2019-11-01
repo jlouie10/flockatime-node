@@ -212,15 +212,19 @@ function verifyToken(token) {
       .lean()
       .sort({ _id: -1 })
       .then(function(results) {
-        if (
-          results.some(
-            result => hashPass(token, result.salt).hash === result.value
-          )
-        ) {
-          resolve(true);
-        } else {
-          resolve(false);
-        }
+        let verifiedToken;
+
+        results.some(result => {
+          if (hashPass(token, result.salt).hash === result.value) {
+            verifiedToken = result;
+
+            return true;
+          } else {
+            return false;
+          }
+        });
+
+        resolve(verifiedToken);
       })
       .catch(function(err) {
         reject(err);
