@@ -203,6 +203,75 @@ function deleteSession(req, res, next) {
 }
 
 /**
+ * Delete a session using the session token to log a user out
+ */
+function logoutSession(req, res, next) {
+  Session.find({})
+    .lean()
+    .sort({ _id: -1 })
+    .then(function(sessions) {
+      sessions.some(session => {
+        if (
+          hashPass(req.headers['x-session-token'], session.salt).hash ===
+          session.sessionToken
+        ) {
+          res.locals.session = session;
+
+          return true;
+        } else {
+          return false;
+        }
+      });
+
+      if (res.locals.session) {
+        return Session.deleteOne({ _id: res.locals.session._id });
+      } else {
+        res.status(404).json({
+          error: {
+            code: 404,
+            message: `No such session`
+          }
+        });
+      }
+    })
+    .then(function(session) {
+      if (session.deletedCount === 0) {
+        res.status(404).json({
+          error: {
+            code: 404,
+            message: `No such session: ${res.locals.session._id}`
+          }
+        });
+      } else {
+        res.locals.attachment = {
+          $pull: {
+            sessions: res.locals.session._id
+          }
+        };
+
+        res.locals.user = res.locals.session.user;
+
+        res.status(200).json({
+          id: res.locals.session._id,
+          deleted: true
+        });
+
+        next();
+      }
+    })
+    .catch(function(err) {
+      console.log(err);
+
+      res.status(500).json({
+        error: {
+          code: 500,
+          message: 'Internal server error'
+        }
+      });
+    });
+}
+
+/**
  * Return a promise that lists all sessions and uses the session token salt to
  * check for the hashed value
  */
@@ -240,5 +309,6 @@ module.exports = {
   retrieve: retrieveSession,
   update: updateSession,
   del: deleteSession, // Avoid 'delete' keyword in JS
+  logout: logoutSession,
   verify: verifySession
 };
