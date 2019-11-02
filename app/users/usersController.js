@@ -10,6 +10,13 @@ const utils = require('../utils');
  */
 function createUser(req, res) {
   const password = hashPass(req.body.password);
+  let role;
+
+  if (req.baseUrl === '/signup') {
+    role = 'USER';
+  } else {
+    role = req.body.role;
+  }
 
   User.create({
     description: req.body.description,
@@ -17,7 +24,7 @@ function createUser(req, res) {
     extensions: req.body.extensions,
     name: req.body.name,
     password: password.hash,
-    role: req.body.role,
+    role: role,
     salt: password.salt,
     status: req.body.status
   })
