@@ -10,6 +10,13 @@ const utils = require('../utils');
  */
 function createUser(req, res) {
   const password = hashPass(req.body.password);
+  let role;
+
+  if (req.baseUrl === '/signup') {
+    role = 'USER';
+  } else {
+    role = req.body.role;
+  }
 
   User.create({
     description: req.body.description,
@@ -17,7 +24,7 @@ function createUser(req, res) {
     extensions: req.body.extensions,
     name: req.body.name,
     password: password.hash,
-    role: req.body.role,
+    role: role,
     salt: password.salt,
     status: req.body.status
   })
@@ -182,11 +189,50 @@ function deleteUser(req, res) {
  * Attach an object to a user
  */
 function attachToUser(req, res) {
-  User.findByIdAndUpdate(req.params.id, res.locals.attachment).catch(function(
-    err
-  ) {
+  let userId;
+
+  if (req.params.id) {
+    userId = req.params.id;
+  } else {
+    userId = res.locals.user;
+  }
+
+  User.findByIdAndUpdate(userId, res.locals.attachment).catch(function(err) {
     console.log(err);
   });
+}
+
+/**
+ * Log a user in by validating email and password
+ */
+function loginUser(req, res, next) {
+  User.findOne({ email: req.body.email })
+    .lean()
+    .then(function(user) {
+      const loginAttempt = hashPass(req.body.password, user.salt);
+
+      if (loginAttempt.hash === user.password) {
+        res.locals.user = user._id;
+        next();
+      } else {
+        res.status(401).json({
+          error: {
+            code: 404,
+            message: 'Wrong email or password'
+          }
+        });
+      }
+    })
+    .catch(function(err) {
+      console.log(err);
+
+      res.status(500).json({
+        error: {
+          code: 500,
+          message: 'Internal server error'
+        }
+      });
+    });
 }
 
 /**
@@ -212,5 +258,6 @@ module.exports = {
   update: updateUser,
   del: deleteUser, // Avoid 'delete' keyword in JS
   attach: attachToUser,
+  login: loginUser,
   retrieveById: retrieveUserById
 };
